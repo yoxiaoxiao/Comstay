@@ -2,7 +2,7 @@
 
 ## Database Schema Design
 
-`![Schema](/images/schema.png)`
+`![Schema](/images/schema.png?raw=true)`
 
 ## API Documentation
 
