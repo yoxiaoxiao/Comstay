@@ -1,0 +1,71 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table spots {
+  id integer [primary key]
+  userId integer
+  address varchar
+  city varchar
+  state varchar
+  country varchar
+  lat decimal
+  lng decimal
+  name varchar
+  description text
+  price money
+  createdAt datetime
+  updatedAt datetime
+  avgRating decimal
+  spotImagesId integer
+}
+
+Table users {
+  id integer [primary key]
+  username varchar
+  firstName varchar
+  lastName varchar
+  email varchar
+  password varchar
+}
+
+Table bookings {
+  id integer [primary key]
+  spotId integer
+  userId integer
+  startDate datetime
+  endDate datetime
+  createdAt datetime
+  updatedAt datetime
+}
+
+Table reviews {
+  id integer [primary key]
+  userId integer
+  spotId integer
+  review text
+  stars integer
+  createdAt datetime
+  updatedAt dateime
+  reviewImagesId integer
+}
+
+Table spotImages {
+  id integer [primary key]
+  imageLink varchar
+  preview boolean
+}
+
+Table reviewImages {
+  id integer [primary key]
+  imageLink varchar
+}
+
+Ref: users.id < spots.userId
+Ref: users.id < reviews.userId
+Ref: users.id < bookings.userId
+
+Ref: spots.id < bookings.spotId
+Ref: spots.id < reviews.spotId
+
+Ref: spotImages.id > spots.spotImagesId
+Ref: reviewImages.id > reviews.reviewImagesId
