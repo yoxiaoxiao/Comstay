@@ -5,15 +5,16 @@ const cors = require('cors');
 const csurf = require('csurf');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const { environment } = require('./config');
-const routes = require('./routes');
 const { ValidationError } = require('sequelize');
 
+const { environment } = require('./config');
 const isProduction = environment === 'production';
 
-const app = express();
-app.use(morgan('dev'));
+const routes = require('./routes');
 
+const app = express();
+
+app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.json());
 
@@ -41,8 +42,10 @@ app.use(
     })
   );
 
-  // Catch unhandled requests and forward to error handler.
-app.use((_req, _res, next) => {
+app.use(routes); // Connect all the routes
+
+ // Catch unhandled requests and forward to error handler.
+ app.use((_req, _res, next) => {
   const err = new Error("The requested resource couldn't be found.");
   err.title = "Resource Not Found";
   err.errors = { message: "The requested resource couldn't be found." };
@@ -75,19 +78,5 @@ app.use((err, _req, res, _next) => {
     stack: isProduction ? null : err.stack
   });
 });
-
-
-
-
-app.use(routes); // Connect all the routes
-
-
-
-
-
-
-
-
-
 
 module.exports = app;
