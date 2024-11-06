@@ -39,7 +39,7 @@ router.get(
   (req, res) => {
     return res.json(req.user);
   }
-);
+ );
 
 // GET /api/require-auth
 const { requireAuth } = require('../../utils/auth.js');
