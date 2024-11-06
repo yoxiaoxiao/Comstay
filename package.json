@@ -1,5 +1,21 @@
 {
   "dependencies": {
     "express-validator": "^7.2.0"
-  }
+  },
+  "name": "comstay",
+  "version": "1.0.0",
+  "description": "![schema](https://github.com/user-attachments/assets/1d195c68-59cc-4639-afed-78d63d9d6e01)",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "install": "npm --prefix backend install backend",
+    "dev:backend": "npm install --prefix backend start",
+    "sequelize": "npm run --prefix backend sequelize",
+    "sequelize-cli": "npm run --prefix backend sequelize-cli",
+    "start": "npm start --prefix backend",
+    "build": "npm run --prefix backend build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
