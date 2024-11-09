@@ -47,6 +47,7 @@ app.use(
 
 app.use('/api/users', userRouter);
 app.use('/api/spots', spotsRouter);
+app.use('/api/spot-images', spotImagesRouter);
 
 
 app.use(routes); // Connect all the routes
