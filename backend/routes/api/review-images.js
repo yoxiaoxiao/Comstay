@@ -6,16 +6,20 @@ const { requireAuth } = require('../../utils/auth');
 //Delete a Review Image
 router.delete('/reviews/:reviewid/images/:imagesId', requireAuth, async (req, res, next) => {
     try {
+        //Find review image based on its id
         const myReviewImage = await ReviewImage.findByPk(parseInt(req.params.reviewImageId));
 
+        //If it doesn't exist, throw an error
         if (!myReviewImage) {
             return res.status(404).json({
                 message: "Review Image couldn't be found"
             })
         };
 
+        //Find associated review with review Image
         const review = await Review.findByPk(myReviewImage.reviewId);
 
+        //Check if review user and current user are the same
         if (review.userId !== req.user.id) {
             const err = new Error("Review must belong to the current user");
             err.status = 403;
@@ -23,6 +27,7 @@ router.delete('/reviews/:reviewid/images/:imagesId', requireAuth, async (req, re
             return next(err);
         }
 
+        //Delete image
         await myReviewImage.destroy();
 
         res.json({
