@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    imageLink: {
+    url: {
         type: DataTypes.STRING(300),
         allowNull: false,
         unique: true,  

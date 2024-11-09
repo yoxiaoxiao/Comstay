@@ -10,43 +10,36 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Review.belongsTo(
         models.User,
-        {
-          foreignKey: 'userId',
-          onDelete: "CASCADE"
-        }
+        { foreignKey: 'userId', onDelete: "CASCADE" }
       ),
       Review.belongsTo(
         models.Spot,
-        {
-          foreignKey: 'spotId',
-          onDelete: "CASCADE"
-        }
+        { foreignKey: 'spotId', onDelete: "CASCADE" }
       ),
-        Review.hasMany(
-          models.ReviewImage,
-          { foreignKey: 'reviewId', onDelete: 'CASCADE' }
-        )
+      Review.hasMany(
+        models.ReviewImage,
+        { foreignKey: 'reviewId', onDelete: 'CASCADE' }
+      )
     }
   }
   Review.init({
     spotId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         model: 'Spots',
         key: 'id',
-      },
-      onDelete: 'CASCADE'
-
+      }
     },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         model: 'Users',
         key: 'id',
-      },
-      onDelete: 'CASCADE'
+      }
     },
     review: {
       type: DataTypes.TEXT,
@@ -65,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
     reviewImagesId: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'Reviews',
+        model: 'ReviewImages',
         key: 'id',
       }
     }
