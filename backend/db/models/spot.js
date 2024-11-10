@@ -51,12 +51,18 @@ module.exports = (sequelize, DataTypes) => {
     lat: {
       type: DataTypes.DECIMAL,
       allowNull: false,
-      unique: true
+      validate: {
+        min: -90,
+        max: 90
+      }
     },
     lng: {
       type: DataTypes.DECIMAL,
       allowNull: false,
-      unique: true
+      validate: {
+        min: -180,
+        max: 180
+      }
     },
     name: {
       type: DataTypes.STRING,
@@ -71,12 +77,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL,
       allowNull: false,
       validate: {
-        min: 0
+        min: 1
       }
     },
     avgRating: {
       type: DataTypes.DECIMAL,
-      allowNull: false,
+      allowNull: true,
+      defaultValue: null,
       validate: {
         min: 1,
         max: 5

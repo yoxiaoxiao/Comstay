@@ -111,7 +111,8 @@ router.post('/', requireAuth, async (req, res, next) => {
         lng,
         name,
         description,
-        price
+        price,
+        avgRating: null,
       });
   
       return res.status(201).json({
