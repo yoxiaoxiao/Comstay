@@ -11,9 +11,6 @@ const { environment } = require('./config');
 const isProduction = environment === 'production';
 
 const routes = require('./routes');
-const userRouter = require('./routes/api/users');
-const spotsRouter = require('./routes/api/spots');
-const spotImagesRouter = require('./routes/api/spot-images');
 
 const app = express();
 
@@ -44,11 +41,6 @@ app.use(
       }
     })
   );
-
-app.use('/api/users', userRouter);
-app.use('/api/spots', spotsRouter);
-app.use('/api/spot-images', spotImagesRouter);
-
 
 app.use(routes); // Connect all the routes
 
