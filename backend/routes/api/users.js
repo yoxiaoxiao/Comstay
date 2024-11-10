@@ -62,4 +62,53 @@ router.post(
     }
   );
 
+  // Get current user info
+  router.get('/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+      const user = await User.findByPk(userId, {
+        attributes: ['id', 'firstName', 'lastName', 'email', 'username'],
+      });
+      res.status(200).json({User: user || null});
+    } catch (error) {
+      res.status(500).json({error:'Internal Server Error'});
+    }
+  });
+
+  // Log in a User
+  router.post('/login', async (req, res) => {
+    const { credential, password } = req.body;
+
+      if (!credential || !password) {
+        return res.status(400).json({
+          "message": "Bad Request",
+          "errors": {
+            "credential": "Email or username is required",
+            "password": "Password is required"
+          }
+        });
+      }
+
+      const user = await User.findOne({
+        where: { 
+          [Sequelize.Op.or]: [{ email: credential }, { username: credential }] 
+        }
+      });
+
+      if (!user || !bcrypt.compareSync(password, user.hashedPassword)) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      res.json({
+        user: {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          username: user.username
+        }
+      });
+  });
+
+
   module.exports = router;
