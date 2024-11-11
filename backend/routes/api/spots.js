@@ -51,10 +51,9 @@ router.get('/:spotId', async (req, res, next) => {
       err.status = 404;
       return next(err); 
     }
- 
     return res.status(200).json({
       id: spot.id,
-      userId: spot.userId, 
+      ownerId: spot.ownerId, 
       address: spot.address,
       city: spot.city,
       state: spot.state,
@@ -73,7 +72,7 @@ router.get('/:spotId', async (req, res, next) => {
         url: image.url,
         preview: image.preview,
       })),
-      User: { 
+      Owner: { 
         id: spot.User.id,
         firstName: spot.User.firstName,
         lastName: spot.User.lastName,
@@ -102,7 +101,7 @@ router.post('/', requireAuth, async (req, res, next) => {
   
     try {
       const spot = await Spot.create({
-        userId: req.user.id, 
+        ownerId: req.user.id, 
         address,
         city,
         state,
@@ -117,7 +116,7 @@ router.post('/', requireAuth, async (req, res, next) => {
   
       return res.status(201).json({
         id: spot.id,
-        userId: spot.userId,
+        ownerId: spot.ownerId,
         address: spot.address,
         city: spot.city,
         state: spot.state,
