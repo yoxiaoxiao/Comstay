@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
+      ownerId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         onDelete: 'CASCADE',
@@ -59,10 +59,6 @@ module.exports = {
       },
       avgRating: {
         type: Sequelize.DECIMAL,
-        allowNull: false
-      },
-      spotImagesId: {
-        type: Sequelize.INTEGER,
         allowNull: false
       },
       createdAt: {

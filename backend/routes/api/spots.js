@@ -112,7 +112,7 @@ router.post('/', requireAuth, async (req, res, next) => {
         name,
         description,
         price,
-        avgRating: null,
+        avgRating: 1,
       });
   
       return res.status(201).json({
@@ -236,7 +236,7 @@ router.put('/spotId', requireAuth, async(req, res, next) => {
     });
 
 // Delete a spot
-router.delete(':spotId', requireAuth, async (req, res, next) => {
+router.delete('/:spotId', requireAuth, async (req, res, next) => {
     const { spotId } = req.params;
   const userId = req.user.id; 
 
@@ -247,7 +247,7 @@ router.delete(':spotId', requireAuth, async (req, res, next) => {
         message: "Spot couldn't be found"
       });
     }
-    if (spot.userId !== userId) {
+    if (spot.ownerId !== userId) {
       return res.status(403).json({
         message: "Not authorized to delete this spot"
       });

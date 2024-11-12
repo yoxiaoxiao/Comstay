@@ -1,0 +1,6 @@
+[
+  {
+    "type": "sqlite",
+    "path": "d:\\App Academy\\AirBnB-Project\\Comstay-testing\\Comstay\\backend\\db\\dev.db"
+  }
+]
