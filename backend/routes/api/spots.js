@@ -1,5 +1,6 @@
 const express = require('express');
-const { requireAuth, validateQueryValues } = require('../../utils/auth');
+const { requireAuth } = require('../../utils/auth');
+const { validateQueryValues } = require('../../utils/validation')
 const { Spot } = require('../../db/models'); 
 const router = express.Router();
 
