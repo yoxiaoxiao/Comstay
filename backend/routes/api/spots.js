@@ -1,7 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('../../utils/auth');
 const { validateQueryValues, validateReview } = require('../../utils/validation')
-const { Spot, SpotImage } = require('../../db/models'); 
+const { Spot, SpotImage, User } = require('../../db/models'); 
 const router = express.Router();
 
 // Get all Spots
@@ -11,24 +11,18 @@ router.get('/', async (req, res) => {
 });
 
 // Get all spots owned by the current user
-router.get('/users/:userId/spots', requireAuth, (req, res, next) => {
-    const { userId } = req.params; 
-    
-    if (req.user.id !== parseInt(userId)) {
-      const err = new Error('Forbidden');
-      err.status = 403;
-      err.message = 'You are not authorized to access this resource.';
-      return next(err); 
-    }
-  
-    Spot.findAll({
-      where: { userId: userId }
-    })
-      .then(spots => {
-        return res.status(200).json({ Spots: spots.length > 0 ? spots : [] });
-      })
-      .catch(next); 
+router.get('/current',requireAuth, async (req,res) => {
+  let Spots = await Spot.findAll({
+      where: { ownerId: req.user.id }
   });
+  if(!Spots){
+      return res.status(404).json({
+          message: "Spot couldn't be found",
+          statusCode: 404
+      });
+  }
+  return res.status(200).json({Spots});
+});
 
 // Get details of a spot from an id
 router.get('/:spotId', async (req, res, next) => {
