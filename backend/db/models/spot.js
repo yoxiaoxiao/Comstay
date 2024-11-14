@@ -89,6 +89,10 @@ module.exports = (sequelize, DataTypes) => {
         max: 5
       }
     },
+    previewImage: {
+      type: DataTypes.STRING,
+      defaultValue: null
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,

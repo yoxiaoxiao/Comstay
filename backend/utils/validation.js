@@ -70,9 +70,54 @@ const reviewCreationValidation = async (req, res, next) => {
       next(error)
   }
 };
+  const validateSpot = [
+    check('address')
+      .exists({ checkFalsy: true })
+      .notEmpty()
+      .withMessage('Street address is required'),
+    check('city')
+      .exists({ checkFalsy: true })
+      .notEmpty()
+      .withMessage('City is required'),
+    check('state')
+      .exists({ checkFalsy: true })
+      .notEmpty()
+      .withMessage('State is required'),
+    check('country')
+      .exists({ checkFalsy: true })
+      .notEmpty()
+      .withMessage('Country is required'),
+      check('lat')
+      .exists({ checkFalsy: true })
+      .notEmpty()
+      .withMessage('Latitude is required'),
+    check('lat')
+      .isFloat({min:-90, max: 90})
+      .withMessage('Latitude is not valid'),
+    check('lng')
+      .exists({ checkFalsy: true })
+      .notEmpty()
+      .withMessage('Longitude is required'),
+    check('lng')
+      .isFloat({min:-180, max: 180})
+      .withMessage('Longitude is not valid'),
+    check('name')
+      .isLength({max: 50})
+      .withMessage('Name must be less than 50 characters'),
+    check('description')
+      .exists({ checkFalsy: true })
+      .notEmpty()
+      .withMessage('Description is required'),
+    check('price')
+        .exists({checkFalsy: true})
+        .notEmpty()
+        .withMessage('"Price per day is required"'),
+    handleValidationErrors
+  ];
   module.exports = {
     validateReview,
     validateQueryValues,
     reviewCreationValidation,
+    validateSpot,
     handleValidationErrors
   };

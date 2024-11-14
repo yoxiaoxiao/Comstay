@@ -1,6 +1,6 @@
 const express = require('express');
 const { requireAuth } = require('../../utils/auth');
-const { validateQueryValues, validateReview } = require('../../utils/validation')
+const { validateQueryValues, validateSpot } = require('../../utils/validation')
 const { Spot, SpotImage, User } = require('../../db/models'); 
 const router = express.Router();
 
@@ -84,12 +84,12 @@ router.post('/', requireAuth, async (req, res, next) => {
     if (!city) errors.city = "City is required";
     if (!state) errors.state = "State is required";
     if (!country) errors.country = "Country is required";
-    if (lat < -90 || lat > 90) errors.lat = "Latitude must be within -90 and 90";
-    if (lng < -180 || lng > 180) errors.lng = "Longitude must be within -180 and 180";
-    if (name.length > 50) errors.name = "Name must be less than 50 characters";
+    if (!lat || lat < -90 || lat > 90) errors.lat = "Latitude must be within -90 and 90";
+    if (!lng || lng < -180 || lng > 180) errors.lng = "Longitude must be within -180 and 180";
+    if (name === undefined || name.length > 50) errors.name = "Name must be less than 50 characters";
     if (!description) errors.description = "Description is required";
-    if (price <= 0) errors.price = "Price per day must be a positive number";
-  
+    if (typeof price !== 'number' || price <= 0) errors.price = "Price per day must be a positive number";
+      
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({ message: "Bad Request", errors });
     }
@@ -169,65 +169,73 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
     });
 
 // Edit a spot
-router.put('/spotId', requireAuth, async(req, res, next) => {
-    const { spotId } = req.params;
-    const userId = req.user.id;
-    const { address, city, state, country, lat, lng, name, description, price } = req.body;
-
-    try {
-        const spot = await Spot.findByPk(spotId);
-        if (!spot) {
-          return res.status(404).json({
-            message: "Spot couldn't be found"
-          });
-        }
-    
-        if (spot.userId !== userId) {
-          return res.status(403).json({ message: "Not authorized to edit this spot" });
-        }
-    
-        const errors = {};
-        if (!address) errors.address = "Street address is required";
-        if (!city) errors.city = "City is required";
-        if (!state) errors.state = "State is required";
-        if (!country) errors.country = "Country is required";
-        if (lat < -90 || lat > 90) errors.lat = "Latitude must be within -90 and 90";
-        if (lng < -180 || lng > 180) errors.lng = "Longitude must be within -180 and 180";
-        if (!name || name.length > 50) errors.name = "Name must be less than 50 characters";
-        if (!description) errors.description = "Description is required";
-        if (price <= 0) errors.price = "Price per day must be a positive number";
-    
-        if (Object.keys(errors).length > 0) {
-          return res.status(400).json({
-            message: "Bad Request",
-            errors
-          });
-        }
-    
-        await spot.update({
-          address, city, state, country, lat, lng, name, description, price
-        });
-    
-        res.status(200).json({
-          id: spot.id,
-          userId: spot.userId,  
-          address: spot.address,
-          city: spot.city,
-          state: spot.state,
-          country: spot.country,
-          lat: spot.lat,
-          lng: spot.lng,
-          name: spot.name,
-          description: spot.description,
-          price: spot.price,
-          createdAt: spot.createdAt,
-          updatedAt: spot.updatedAt
-        });
-    
-      } catch (error) {
-        next(error);
+router.put('/:spotId', requireAuth, async(req,res) => {
+  let spot = await Spot.findOne({
+      where: {
+          id: req.params.spotId,
       }
+  });
+
+  const { address, city, state, country, lat, lng, name, description, price } = req.body;
+
+  const errors = {};
+  if (!address) errors.address = "Street address is required";
+  if (!city) errors.city = "City is required";
+  if (!state) errors.state = "State is required";
+  if (!country) errors.country = "Country is required";
+  if (!lat || lat < -90 || lat > 90) errors.lat = "Latitude must be within -90 and 90";
+  if (!lng || lng < -180 || lng > 180) errors.lng = "Longitude must be within -180 and 180";
+  if (!name || name.length > 50) errors.name = "Name must be less than 50 characters";
+  if (!description) errors.description = "Description is required";
+  if (typeof price !== 'number' || price <= 0) errors.price = "Price per day must be a positive number";
+  
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({
+      message: "Bad Request",
+      errors
     });
+  }
+
+  if(!spot){
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+      statusCode: 404
+    });
+  }else if(spot.ownerId !== req.user.id){
+    return res.status(403).json({
+      message: "Spot must belong to the current user",
+      statusCode: 403
+    });
+  }
+    spot.address =address;
+    spot.city =city;
+    spot.state =state;
+    spot.country =country;
+    spot.lat =lat;
+    spot.lng =lng;
+    spot.name =name;
+    spot.description =description;
+    spot.price =price;
+
+    await spot.save();
+
+    const revisedSpot =  await Spot.findOne({
+    where: {
+      address:address,
+      city:city,
+      state:state,
+      country:country,
+      lat:lat,
+      lng:lng,
+      name:name,
+      description:description,
+      price:price,
+      ownerId: req.user.id
+    },
+    attributes :{ exclude: ["previewImage", "avgRating"] }
+  });
+    return res.status(200).json(revisedSpot);
+});
 
 // Delete a spot
 router.delete('/:spotId', requireAuth, async (req, res, next) => {
