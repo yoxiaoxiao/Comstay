@@ -1,7 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('../../utils/auth');
-const { validateQueryValues, validateSpot } = require('../../utils/validation')
-const { Spot, SpotImage, User } = require('../../db/models'); 
+const { validateQueryValues, validateReview } = require('../../utils/validation')
+const { Spot, SpotImage, User, Review, ReviewImage} = require('../../db/models'); 
 const router = express.Router();
 
 // Get all Spots
@@ -267,45 +267,41 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
 });
 
 // Create a Review for a Spot based on the Spot's ID
-router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
-  const spot = await Spot.findByPk(req.params.spotId);
-  //404 error if spot not found
-  if (!spot) {
-    return res.status(404).json({
-      message: "Spot couldn't be found",
-    });
-  }
-
-  const { review, stars } = req.body;
-  const id = spot.id;
-  const userId = req.user.id;
-
-  //Error response: Review from the current user already exists for the Spot
-  const revs = await Review.findOne({
-    where: {
-      spotId: id,
-      userId,
-    },
+router.post('/:spotId/reviews',requireAuth,validateReview, async(req,res) => {
+  const {review,stars} = req.body;
+  const {spotId} = req.params;
+  let currentUser = req.user.id;
+  const spot = await Spot.findByPk(spotId);
+  const reviewed = await Review.findOne({
+      where:{
+          spotId: spotId,
+          userId: currentUser,
+      }
   });
 
-  if (revs) {
-    return res.status(500).json({
-      message: "User already has a review for this spot",
-    });
-  }
-
-  try {
-    const createdReview = await Review.create({
-      spotId: id,
-      userId,
-      review,
-      stars,
-    });
-    await createdReview.save();
-    return res.status(201).json(createdReview);
-  } catch (e) {
-    e.status = 400;
-    next(e);
+  if(reviewed){
+      return res.status(500).json({
+          message: "User already has a review for this spot",
+          statusCode: 500
+      });
+  }else if(!spot){
+      return res.status(404).json({
+          message: "Spot couldn't be found",
+          statusCode: 404
+      });
+  }else if(spot.ownerId === req.user.id){
+      return res.status(403).json({
+          message: "Spot must not belong to the current user",
+          statusCode: 403
+      });
+  }else{
+      let newReview = await Review.create({
+          userId: req.user.id,
+          spotId: parseInt(spotId),
+          review,
+          stars
+      });
+          return res.status(201).json(newReview);
   }
 });
 
@@ -334,7 +330,7 @@ router.get('/:spotId/reviews', async (req, res, next) => {
               message: "Spot couldn't be found"
           })
 
-      res.json({ Reviews })
+      res.status(200).json({ Reviews })
   } catch (error) {
       next(error)
   }

@@ -54,13 +54,6 @@ module.exports = (sequelize, DataTypes) => {
         min: 0,
         max: 5
       }
-    },
-    reviewImagesId: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'ReviewImages',
-        key: 'id',
-      }
     }
   }, {
     sequelize,
