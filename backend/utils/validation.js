@@ -20,10 +20,16 @@ const handleValidationErrors = (req, _res, next) => {
     next();
   };
   
-const validateReviews = [
-  check('review').exists({ checkFalsy: true }).withMessage("Review Text is required"),
-  check('stars').isLength({ min: 1, max: 5 }).withMessage("Stars must be an integer from 1 to 5"),
-  handleValidationErrors
+  const validateReview = [
+    check('review')
+        .exists({ checkFalsy: true })
+        .withMessage(`Review text is required.`),
+    check('stars')
+        .exists({ checkFalsy: true })
+        .withMessage(`Review couldn't be found.`)
+        .isInt({ gt: 0, lt: 6 })
+        .withMessage(`Stars must be an integer from 1 to 5.`),
+    handleValidationErrors
 ];
 
 const validateQueryValues = [
@@ -65,7 +71,7 @@ const reviewCreationValidation = async (req, res, next) => {
   }
 };
   module.exports = {
-    validateReviews,
+    validateReview,
     validateQueryValues,
     reviewCreationValidation,
     handleValidationErrors

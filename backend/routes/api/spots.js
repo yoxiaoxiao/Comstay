@@ -1,7 +1,7 @@
 const express = require('express');
 const { requireAuth } = require('../../utils/auth');
-const { validateQueryValues } = require('../../utils/validation')
-const { Spot } = require('../../db/models'); 
+const { validateQueryValues, validateReview } = require('../../utils/validation')
+const { Spot, SpotImage } = require('../../db/models'); 
 const router = express.Router();
 
 // Get all Spots
@@ -145,7 +145,7 @@ router.post('/:spotId/images', requireAuth, async (req, res, next) => {
       const spot = await Spot.findByPk(spotId);
   
       if (!spot) {
-        const err = new Error("Spot not found");
+        const err = new Error("Spot couldn't be found");
         err.status = 404;
         return next(err);
       }
@@ -263,6 +263,80 @@ router.delete('/:spotId', requireAuth, async (req, res, next) => {
     next(error);
   }
 });
+
+// Create a Review for a Spot based on the Spot's ID
+router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
+  const spot = await Spot.findByPk(req.params.spotId);
+  //404 error if spot not found
+  if (!spot) {
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+  }
+
+  const { review, stars } = req.body;
+  const id = spot.id;
+  const userId = req.user.id;
+
+  //Error response: Review from the current user already exists for the Spot
+  const revs = await Review.findOne({
+    where: {
+      spotId: id,
+      userId,
+    },
+  });
+
+  if (revs) {
+    return res.status(500).json({
+      message: "User already has a review for this spot",
+    });
+  }
+
+  try {
+    const createdReview = await Review.create({
+      spotId: id,
+      userId,
+      review,
+      stars,
+    });
+    await createdReview.save();
+    return res.status(201).json(createdReview);
+  } catch (e) {
+    e.status = 400;
+    next(e);
+  }
+});
+
+//Get all Reviews by a Spot's Id
+router.get('/:spotId/reviews', async (req, res, next) => {
+  try {
+      //Find all reviews based on spot id
+      const Reviews = await Review.findAll({
+          where: {
+              spotId: parseInt(req.params.spotId)
+          },
+          include: [
+              {
+                  model: User,
+                  attributes: ['id', 'firstName', 'lastName']
+              },
+              {
+                  model: ReviewImage,
+                  attributes: ['id', 'url']
+              }
+          ]
+      });
+      //If none are found, create an error
+      if (!Reviews || Reviews.length === 0)
+          return res.status(404).json({
+              message: "Spot couldn't be found"
+          })
+
+      res.json({ Reviews })
+  } catch (error) {
+      next(error)
+  }
+})
 
 //Add Query Filters to Get All Spots	
 router.get('/spotSearch', validateQueryValues, async (req, res, next) => {

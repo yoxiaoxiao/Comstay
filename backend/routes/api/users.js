@@ -109,6 +109,40 @@ router.post(
         }
       });
   });
+  
+  //Get all Reviews of the Current User
+router.get('/:userId/reviews', requireAuth, async (req, res, next) => {
+  const { user } = req;
 
+  const currentUserReviews = await Review.findAll({
+      where: { userId: user.id },
+      include: [
+          { model: User, attributes: [ "id", "firstName", "lastName" ]},
+          {
+              model: Spot,
+              attributes: [ "id", "ownerId", "address", "city", "state", "country", "lat", "lng", "name", "price" ],
+          },
+          { model: ReviewImage, attributes: ["id", "url"]}
+      ]
+  })
+
+  for(let i = 0; i < currentUserReviews.length; i++) {
+      currentUserReviews[i] = currentUserReviews[i].toJSON();
+
+      let previewImg = await SpotImage.findOne({
+          where: {
+              spotId: currentUserReviews[i].Spot.id,
+              preview: true
+          }
+      })
+
+      if(previewImg) {
+          currentUserReviews[i].Spot.previewImage = previewImg.url;
+      } else {
+          currentUserReviews[i].Spot.previewImage = null;
+      }
+  }
+  return res.json({ Reviews: currentUserReviews })
+});
 
   module.exports = router;
