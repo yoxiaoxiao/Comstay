@@ -1,11 +1,5 @@
 const router = require("express").Router();
-const {
-  SpotImage,
-  Spot,
-  User,
-  Review,
-  ReviewImage,
-} = require("../../db/models");
+const { SpotImage, Spot, User, Review, ReviewImage} = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 const { validateReview } = require("../../utils/validation");
 
@@ -71,11 +65,8 @@ router.get("/current", requireAuth, async (req, res) => {
 });
 
 // Add an Image to a Review based on the Review's ID
-router.post(
-  "/:reviewId/images",
-  requireAuth,
-  imageMax,
-  async (req, res, next) => {
+router.post("/:reviewId/images", requireAuth, imageMax, async (req, res, next) => {
+
     const { url } = req.body;
     const { reviewId } = req.params;
     const { user } = req;
@@ -102,11 +93,7 @@ router.post(
 );
 
 // Edit a Review
-router.put(
-  "/:reviewId",
-  validateReview,
-  requireAuth,
-  async (req, res, next) => {
+router.put("/:reviewId", validateReview, requireAuth, async (req, res, next) => {
     const { review, stars } = req.body;
     const { reviewId } = req.params;
     const { user } = req;
@@ -133,24 +120,30 @@ router.put(
 );
 
 // Delete a Review
-router.delete("/:reviewId", requireAuth, async (req, res, next) => {
-  const { reviewId } = req.params;
-  const { user } = req;
-
-  const review = await Review.findByPk(reviewId);
-  if (review && parseInt(review.userId) !== parseInt(user.id)) {
-    const err = new Error("Forbidden");
-    err.status = 403;
-    return next(err);
-  }
-  if (review) {
-    await review.destroy();
-    return res.json({ message: "Successfully deleted", statusCode: 200 });
-  } else {
-    const err = new Error("Review couldn't be found");
-    err.status = 404;
-    return next(err);
-  }
+router.delete('/:reviewId',requireAuth, async(req,res) => {
+    const {reviewId} = req.params;
+    const review = await Review.findOne({
+        where:{
+            id:reviewId,
+        }
+    });
+    if(!review){
+        res.status(404).json({
+            message: "Review couldn't be found",
+            statusCode: 404
+        });
+    }else if(review.userId !== req.user.id){
+        return res.status(403).json({
+            message: "Review must belong to the current user",
+            statusCode: 403
+        });
+    }else{
+        await review.destroy()
+        res.status(200).json({
+            message: "Successfully deleted",
+            statusCode: 200
+        });
+    }
 });
 
 module.exports = router;

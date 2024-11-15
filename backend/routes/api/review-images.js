@@ -4,39 +4,39 @@ const { requireAuth } = require('../../utils/auth');
 
 
 //Delete a Review Image
-router.delete('/reviews/:reviewid/images/:imagesId', requireAuth, async (req, res, next) => {
-    try {
-        //Find review image based on its id
-        const myReviewImage = await ReviewImage.findByPk(parseInt(req.params.reviewImageId));
+router.delete('/:reviewImageId',requireAuth, async(req,res) => {
+    const {reviewImageId} = req.params;
+    const userId = req.user.id;
 
-        //If it doesn't exist, throw an error
-        if (!myReviewImage) {
-            return res.status(404).json({
-                message: "Review Image couldn't be found"
-            })
-        };
-
-        //Find associated review with review Image
-        const review = await Review.findByPk(myReviewImage.reviewId);
-
-        //Check if review user and current user are the same
-        if (review.userId !== req.user.id) {
-            const err = new Error("Review must belong to the current user");
-            err.status = 403;
-            err.title = "Forbidden";
-            return next(err);
-        }
-
-        //Delete image
-        await myReviewImage.destroy();
-
-        res.json({
-            message: "Successfully deleted"
+    const reviewImage = await ReviewImage.findByPk(reviewImageId);
+    //Check if image exists
+    if(!reviewImage){
+        return res.status(404).json({
+            message: "Review Image couldn't be found",
+            statusCode: 404
         });
-
-    } catch (error) {
-        next(error);
+    }else {
+        //Check if review exists and if it was created by current user
+        const review = await Review.findByPk(reviewImage.reviewId);
+        if(!review){
+            return res.status(404).json({
+                message: "Review couldn't be found",
+                statusCode: 404
+            });
+        }else if(review.userId !== userId){
+            return res.status(403).json({
+                message: "Review must belong to the current user",
+                statusCode: 403
+            });
+        }else{
+            //Delete the image
+            await reviewImage.destroy()
+            return res.status(200).json({
+                message: "Successfully deleted",
+                statusCode: 200
+            });
+        }
     }
-})
+});
 
 module.exports = router;

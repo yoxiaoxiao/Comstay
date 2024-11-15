@@ -3,8 +3,8 @@ const sessionRouter = require('./session.js');
 const usersRouter = require('./users.js');
 const reviewsRouter = require('./reviews.js');
 const reviewImagesRouter = require('./review-images.js');
-const spotsRouter = require('./spots');
-const spotImagesRouter = require('./spotImages.js');
+const spotsRouter = require('./spots.js');
+const spotImagesRouter = require('./spot-images.js');
 const { restoreUser } = require('../../utils/auth.js');
 
 // Connect restoreUser middleware to the API router
@@ -18,10 +18,11 @@ const { restoreUser } = require('../../utils/auth.js');
 
   router.use('/reviews', reviewsRouter);
 
-  router.use('/reviewImages', reviewImagesRouter);
+  router.use('/review-images', reviewImagesRouter);
+  
   router.use('/spots', spotsRouter);
 
-  router.use('/spotImages', spotImagesRouter);
+  router.use('/spot-images', spotImagesRouter);
   
   router.post('/test', (req, res) => {
     res.json({ requestBody: req.body });
