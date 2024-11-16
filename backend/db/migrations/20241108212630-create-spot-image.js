@@ -25,7 +25,7 @@ module.exports = {
           key: 'id',
         }
       },
-      imageLink: {
+      url: {
         type: Sequelize.STRING,
         allowNull: false
       },

@@ -44,12 +44,12 @@ module.exports = {
       lat: {
         type: Sequelize.DECIMAL,
         allowNull: false,
-        unique: true
+        unique: false
       },
       lng: {
         type: Sequelize.DECIMAL,
         allowNull: false,
-        unique: true
+        unique: false
       },
       name: {
         type: Sequelize.STRING,
@@ -67,6 +67,10 @@ module.exports = {
       avgRating: {
         type: Sequelize.DECIMAL,
         allowNull: false
+      },
+      previewImage: {
+        type: Sequelize.STRING,
+        defaultValue: null,
       },
       createdAt: {
         allowNull: false,
