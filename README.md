@@ -273,7 +273,7 @@ Returns all the spots owned (created) by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * Route path: users/:userId/spots
+  * Route path: /spots/current
   * Body: none
 
 * Successful Response
@@ -1307,7 +1307,7 @@ Delete an existing image for a Spot.
 * Require proper authorization: Spot must belong to the current user
 * Request
   * Method: DELETE
-  * Route path: /spots/:spotId/images/:imageId
+  * Route path: /spot-images/:id
   * Body: none
 
 * Successful Response
@@ -1342,7 +1342,7 @@ Delete an existing image for a Review.
 * Require proper authorization: Review must belong to the current user
 * Request
   * Method: DELETE
-  * Route path: /reviews/:reviewid/images/:imagesId
+  * Route path: /review-images/reviewImageId
   * Body: none
 
 * Successful Response
@@ -1376,7 +1376,7 @@ Return spots filtered by query parameters.
 * Require Authentication: false
 * Request
   * Method: GET
-  * Route path: /spotSearch
+  * Route path: /spots
   * Query Parameters
     * page: integer, minimum: 1, default: 1
     * size: integer, minimum: 1, maximum: 20, default: 20
