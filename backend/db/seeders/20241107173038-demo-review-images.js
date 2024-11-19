@@ -1,25 +1,31 @@
 'use strict';
-const { ReviewImage } = require('../models');
-const bcrypt = require("bcryptjs");
+
+const { ReviewImage } = require('../models')
+
+/** @type {import('sequelize-cli').Migration} */
 
 let options = {};
 options.tableName = 'ReviewImages'
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
-/** @type {import('sequelize-cli').Migration} */
 
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
+  async up(queryInterface, Sequelize) {
+    await ReviewImage.bulkCreate([
+      {
+        url: "https://computersciencehero.com/wp-content/uploads/2019/10/o.jpg",
+        reviewId: 1
+      },
+      {
+        url: "https://computersciencehero.com/wp-content/uploads/2019/10/app-academy-cover.jpg",
+        reviewId: 2
+      },
+      {
+        url: "https://pbs.twimg.com/media/DBr6IOKXcAEhbbX.jpg",
+        reviewId: 1
+      }
+    ], options)
   },
 
   async down(queryInterface, Sequelize) {
