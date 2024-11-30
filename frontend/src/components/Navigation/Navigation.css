@@ -1,0 +1,59 @@
+.nav-bar {
+    display: flex;
+}
+
+.logo-container {
+    margin-left: 80px;
+    margin-top: 15px;
+}
+
+.logo-container img {
+    height: 125px;
+    width: 225px;
+}
+
+.profile-button {
+    position: absolute;
+    top: 70px; 
+    right: 160px; 
+    background-color: transparent; /* Makes the button background transparent */
+    border: none; 
+    cursor: pointer; 
+    font-size: 40px; /* Increases size of the icon */
+  }
+  
+  .profile-button:hover {
+    color: #ff914d; 
+  }
+
+.profile-dropdown {
+    position: absolute;
+    top: 110px;
+    right: 110px;
+    background-color: #8bccb4;
+    border: 2px solid #8bccb4; 
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px 20px 10px 25px; /* Space inside the dropdown */
+    display: none; /* Hide the dropdown by default */
+    z-index: 100; /* Ensure it's above other elements */
+}
+
+.profile-dropdown:not(.hidden) {
+    display: block; /* Display the dropdown */
+}
+
+.profile-dropdown li {
+    list-style: none;
+    padding: 6px 10px; /* Space around each item */
+    cursor: pointer; 
+    font-size: 16px; 
+    color: #20211a; 
+    transition: background-color 0.2s ease, color 0.2s ease; /* Smooth hover effect */
+    font-family: 'Verdana', sans-serif;
+    font-weight: 900;
+}
+
+.profile-dropdown li:hover {
+    color: #f5f5f5; 
+}
+
