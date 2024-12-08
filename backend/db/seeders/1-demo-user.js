@@ -31,6 +31,20 @@ module.exports = {
         hashedPassword: bcrypt.hashSync('password3'),
         firstName: 'Fake',
         lastName: 'User2'
+      },
+      {
+        email: 'emily.jones@example.com',
+        username: 'EmilyJones',
+        hashedPassword: bcrypt.hashSync('password4'),
+        firstName: 'Emily',
+        lastName: 'Jones'
+      },
+      {
+        email: 'michael.smith@example.com',
+        username: 'MichaelSmith',
+        hashedPassword: bcrypt.hashSync('password5'),
+        firstName: 'Michael',
+        lastName: 'Smith'
       }
     ], { validate: true }).catch(error => console.log('Seeding error:', error));
   },
@@ -39,7 +53,7 @@ module.exports = {
     options.tableName = 'Users';
     const Op = Sequelize.Op;
     return queryInterface.bulkDelete(options, {
-      username: { [Op.in]: ['Demo-lition', 'FakeUser1', 'FakeUser2'] }
+      username: { [Op.in]: ['Demo-lition', 'FakeUser1', 'FakeUser2', 'EmilyJones', 'MichaelSmith'] }
     }, {});
   }
 };

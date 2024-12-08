@@ -5,6 +5,37 @@ const { validateReview, validateQueryValues } = require("../../utils/validation"
 const { Spot, SpotImage, User, Review, ReviewImage} = require("../../db/models");
 const router = express.Router();
 
+// Get all spots
+router.get('/spots', async (req, res, next) => {
+  try {
+    const spots = await Spot.findAll();
+
+    const formattedSpots = spots.map((spot) => {
+      return {
+        id: spot.id,
+        ownerId: spot.ownerId,
+        address: spot.address,
+        city: spot.city,
+        state: spot.state,
+        country: spot.country,
+        lat: spot.lat,
+        lng: spot.lng,
+        name: spot.name,
+        description: spot.description,
+        price: spot.price,
+        createdAt: spot.createdAt,
+        updatedAt: spot.updatedAt,
+        avgRating: spot.avgRating,
+        previewImage: spot.previewImage, 
+      };
+    });
+
+    res.status(200).json({ Spots: formattedSpots });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Get all spots owned by the current user
 router.get("/current", requireAuth, async (req, res) => {
   let Spots = await Spot.findAll({
